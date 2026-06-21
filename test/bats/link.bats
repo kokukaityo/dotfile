@@ -22,11 +22,13 @@ teardown() {
   local os_key
   os_key="$(get_os_key)"
   local target_file="$HOME/linked-file"
+  local target_native
+  target_native="$(to_native_path "$target_file")"
 
   echo "source content" > "$DOTFILES_DIR/editor/testfile.txt"
   cat > "$DOTFILES_DIR/editor/link.toml" <<TOML
 [$os_key]
-"testfile.txt" = ["$target_file"]
+"testfile.txt" = ["$target_native"]
 TOML
   git -C "$DOTFILES_DIR" add -A
   git -C "$DOTFILES_DIR" commit -m "add link config" --quiet
@@ -46,13 +48,15 @@ TOML
   local os_key
   os_key="$(get_os_key)"
   local target_file="$HOME/existing-file"
+  local target_native
+  target_native="$(to_native_path "$target_file")"
 
   mkdir -p "$(dirname "$target_file")"
   echo "old content" > "$target_file"
   echo "new content" > "$DOTFILES_DIR/editor/testfile.txt"
   cat > "$DOTFILES_DIR/editor/link.toml" <<TOML
 [$os_key]
-"testfile.txt" = ["$target_file"]
+"testfile.txt" = ["$target_native"]
 TOML
   git -C "$DOTFILES_DIR" add -A
   git -C "$DOTFILES_DIR" commit -m "add link config" --quiet
@@ -77,11 +81,13 @@ TOML
   local os_key
   os_key="$(get_os_key)"
   local target_file="$HOME/linked-file"
+  local target_native
+  target_native="$(to_native_path "$target_file")"
 
   echo "content" > "$DOTFILES_DIR/editor/testfile.txt"
   cat > "$DOTFILES_DIR/editor/link.toml" <<TOML
 [$os_key]
-"testfile.txt" = ["$target_file"]
+"testfile.txt" = ["$target_native"]
 TOML
   git -C "$DOTFILES_DIR" add -A
   git -C "$DOTFILES_DIR" commit -m "add link config" --quiet
@@ -98,9 +104,11 @@ TOML
 
   local os_key
   os_key="$(get_os_key)"
+  local target_native
+  target_native="$(to_native_path "$HOME/target")"
   cat > "$DOTFILES_DIR/editor/link.toml" <<TOML
 [$os_key]
-"nonexistent.txt" = ["$HOME/target"]
+"nonexistent.txt" = ["$target_native"]
 TOML
   git -C "$DOTFILES_DIR" add -A
   git -C "$DOTFILES_DIR" commit -m "add link config" --quiet

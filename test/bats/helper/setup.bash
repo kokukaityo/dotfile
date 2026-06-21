@@ -35,6 +35,8 @@ _common_setup() {
 
   git config --global safe.bareRepository all
   git config --global init.defaultBranch main
+  git config --global user.name "bats-test"
+  git config --global user.email "bats@test.invalid"
 
   if [[ "$(uname -s)" == MINGW* ]] || [[ "$(uname -s)" == MSYS* ]]; then
     if [[ ! -f "$PROJECT_ROOT/dist/dotfile.exe" ]]; then
@@ -82,6 +84,14 @@ can_symlink() {
   fi
   rm -f "$test_target"
   return 1
+}
+
+to_native_path() {
+  if [[ "$(uname -s)" == MINGW* ]] || [[ "$(uname -s)" == MSYS* ]]; then
+    cygpath -m "$1"
+  else
+    echo "$1"
+  fi
 }
 
 create_data_repo() {
