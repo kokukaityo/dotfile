@@ -4,7 +4,7 @@
 
 - **Windows**: Git Bash（MSYS2 / MinGW）
 - **macOS / Linux**: bash
-- **Codespace**: `.devcontainer/` あり。セットアップ手順は `doc/codespace_setup.md` を参照
+- **Codespace**: `.devcontainer/` あり（詳細は末尾の Appendix）
 - **ShellCheck**: 未導入（将来導入予定）
 
 ## ブランチ運用
@@ -78,3 +78,26 @@ E2E を優先する理由: このツールの本質は symlink・Git・ファイ
 
 - Go によるエンジン書き直し（シングルバイナリ配布）
 - Homebrew tap
+
+---
+
+## Appendix: Codespace セットアップ
+
+`.devcontainer/devcontainer.json` 済み。`postStartCommand` で Claude Code が自動起動する。
+
+**初回セットアップ**:
+
+1. GitHub リポジトリ → Code → Codespaces → New codespace
+2. ターミナルで `npm install -g @anthropic-ai/claude-code` を手動実行
+3. 認証: `claude auth login`（OAuth）、または Codespaces Secrets に `ANTHROPIC_API_KEY` を設定（推奨。再作成時も自動注入される）
+4. `/config` → `Enable Remote Control for all sessions` → `true`
+
+**日常の使い方**:
+
+| 状況 | やること |
+|---|---|
+| 外出先でつなぎたい | Claude アプリ → Code タブ → セッションをタップ |
+| セッションが切れていたら | GitHub アプリ → Codespaces → 起動（Claude Code も自動起動） |
+| PC で開発したい | VSCode でローカルリポジトリをそのまま編集・push |
+
+注意: Codespace の無料枠は月120時間（2コア）。使わないときは停止推奨。
