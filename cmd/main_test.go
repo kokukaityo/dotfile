@@ -1,4 +1,4 @@
-package engine
+package main
 
 import (
 	"bytes"
@@ -20,5 +20,18 @@ func TestVersionCommandWithoutDataRepository(t *testing.T) {
 	}
 	if !strings.Contains(stdout.String(), "dotfile engine v1.2.3") {
 		t.Fatalf("unexpected output: %s", stdout.String())
+	}
+}
+
+func TestRootCommandReturnsErrorWithoutExit(t *testing.T) {
+	existing := t.TempDir()
+	app := &application{templateFS: fstest.MapFS{}, hookFS: fstest.MapFS{}, engineVersion: "1.0.0"}
+	command := app.rootCommand()
+	command.SetArgs([]string{"init", existing})
+	command.SetOut(&bytes.Buffer{})
+	command.SetErr(&bytes.Buffer{})
+
+	if err := command.Execute(); err == nil {
+		t.Fatal("existing path did not return an error")
 	}
 }

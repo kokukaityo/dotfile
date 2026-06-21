@@ -13,7 +13,6 @@ import (
 	"time"
 
 	"github.com/BurntSushi/toml"
-	"github.com/spf13/cobra"
 )
 
 const (
@@ -23,8 +22,8 @@ const (
 
 var categoryNamePattern = regexp.MustCompile(`^[a-zA-Z0-9_][a-zA-Z0-9_.-]*$`)
 
-func generateGitignore(config *Config) error {
-	path := repositoryPath(config, ".gitignore")
+func GenerateGitignore(config *Config) error {
+	path := RepositoryPath(config, ".gitignore")
 	manualSection, err := readManualGitignore(path)
 	if err != nil {
 		return err
@@ -77,23 +76,23 @@ func readManualGitignore(path string) (string, error) {
 	return strings.Join(lines, "\n"), nil
 }
 
-func status(config *Config, cmd *cobra.Command) error {
-	if _, err := os.Stat(repositoryPath(config, ".conflict-pending")); err == nil {
-		_, _ = fmt.Fprintln(cmd.OutOrStdout(), "")
-		_, _ = fmt.Fprintln(cmd.OutOrStdout(), "========================================")
-		_, _ = fmt.Fprintln(cmd.OutOrStdout(), "  [dotfile] CONFLICT PENDING")
-		_, _ = fmt.Fprintf(cmd.OutOrStdout(), "  Run: cd %s && git log --oneline --graph --all\n", config.DotfilesDir)
-		_, _ = fmt.Fprintln(cmd.OutOrStdout(), "========================================")
-		_, _ = fmt.Fprintln(cmd.OutOrStdout(), "")
+func Status(config *Config, stdout io.Writer) error {
+	if _, err := os.Stat(RepositoryPath(config, ".conflict-pending")); err == nil {
+		_, _ = fmt.Fprintln(stdout, "")
+		_, _ = fmt.Fprintln(stdout, "========================================")
+		_, _ = fmt.Fprintln(stdout, "  [dotfile] CONFLICT PENDING")
+		_, _ = fmt.Fprintf(stdout, "  Run: cd %s && git log --oneline --graph --all\n", config.DotfilesDir)
+		_, _ = fmt.Fprintln(stdout, "========================================")
+		_, _ = fmt.Fprintln(stdout, "")
 	} else if !os.IsNotExist(err) {
 		return fmt.Errorf("コンフリクト状態を確認できません: %w", err)
 	}
 	return nil
 }
 
-func pull(config *Config, cmd *cobra.Command) error {
-	git := GitRunner{WorkDir: config.DotfilesDir, Stdout: cmd.OutOrStdout(), Stderr: cmd.ErrOrStderr()}
-	if err := clearResolvedConflictMarker(config, git, cmd.OutOrStdout()); err != nil {
+func Pull(config *Config, stdout, stderr io.Writer) error {
+	git := GitRunner{WorkDir: config.DotfilesDir, Stdout: stdout, Stderr: stderr}
+	if err := clearResolvedConflictMarker(config, git, stdout); err != nil {
 		return err
 	}
 	if err := git.Run("fetch", "--quiet", "origin"); err != nil {
@@ -103,7 +102,7 @@ func pull(config *Config, cmd *cobra.Command) error {
 	remoteRef := "origin/" + config.Sync.DefaultBranch
 	remoteHead, err := git.Output("rev-parse", "--verify", remoteRef)
 	if err != nil {
-		_, _ = fmt.Fprintf(cmd.OutOrStdout(), "[sync] リモートブランチがありません: %s\n", remoteRef)
+		_, _ = fmt.Fprintf(stdout, "[sync] リモートブランチがありません: %s\n", remoteRef)
 		return nil
 	}
 	localHead, err := git.Output("rev-parse", "HEAD")
@@ -111,7 +110,7 @@ func pull(config *Config, cmd *cobra.Command) error {
 		return err
 	}
 	if localHead == remoteHead {
-		_, _ = fmt.Fprintln(cmd.OutOrStdout(), "[sync] Already up to date.")
+		_, _ = fmt.Fprintln(stdout, "[sync] Already up to date.")
 		return nil
 	}
 
@@ -123,11 +122,11 @@ func pull(config *Config, cmd *cobra.Command) error {
 		if err := git.Run("merge", "--ff-only", remoteRef); err != nil {
 			return err
 		}
-		_, _ = fmt.Fprintf(cmd.OutOrStdout(), "[sync] Fast-forwarded to %s.\n", remoteRef)
+		_, _ = fmt.Fprintf(stdout, "[sync] Fast-forwarded to %s.\n", remoteRef)
 		return nil
 	}
 	if remoteHead == mergeBase {
-		_, _ = fmt.Fprintln(cmd.OutOrStdout(), "[sync] ローカルがリモートより先行しています。pullをスキップします。")
+		_, _ = fmt.Fprintln(stdout, "[sync] ローカルがリモートより先行しています。pullをスキップします。")
 		return nil
 	}
 
@@ -136,7 +135,7 @@ func pull(config *Config, cmd *cobra.Command) error {
 		host = "unknown"
 	}
 	conflictBranch := fmt.Sprintf("conflict/%s/%s", sanitizeBranchPart(host), time.Now().Format("20060102-150405"))
-	_, _ = fmt.Fprintf(cmd.OutOrStdout(), "[sync] 分岐を検出しました。退避ブランチを作成: %s\n", conflictBranch)
+	_, _ = fmt.Fprintf(stdout, "[sync] 分岐を検出しました。退避ブランチを作成: %s\n", conflictBranch)
 	if err := git.Run("checkout", "-b", conflictBranch); err != nil {
 		return err
 	}
@@ -158,15 +157,15 @@ func pull(config *Config, cmd *cobra.Command) error {
 	if err := git.Run("reset", "--hard", remoteRef); err != nil {
 		return err
 	}
-	if err := os.WriteFile(repositoryPath(config, ".conflict-pending"), nil, 0o644); err != nil {
+	if err := os.WriteFile(RepositoryPath(config, ".conflict-pending"), nil, 0o644); err != nil {
 		return fmt.Errorf(".conflict-pendingを作成できません: %w", err)
 	}
-	_, _ = fmt.Fprintf(cmd.OutOrStdout(), "[sync] ローカル変更は%sへ退避し、%sを%sへ戻しました。\n", conflictBranch, config.Sync.DefaultBranch, remoteRef)
+	_, _ = fmt.Fprintf(stdout, "[sync] ローカル変更は%sへ退避し、%sを%sへ戻しました。\n", conflictBranch, config.Sync.DefaultBranch, remoteRef)
 	return nil
 }
 
 func clearResolvedConflictMarker(config *Config, git GitRunner, stdout io.Writer) error {
-	marker := repositoryPath(config, ".conflict-pending")
+	marker := RepositoryPath(config, ".conflict-pending")
 	if _, err := os.Stat(marker); os.IsNotExist(err) {
 		return nil
 	} else if err != nil {
@@ -190,21 +189,21 @@ func sanitizeBranchPart(value string) string {
 	return strings.Trim(replacer.Replace(value), "./")
 }
 
-func push(config *Config, cmd *cobra.Command) error {
-	git := GitRunner{WorkDir: config.DotfilesDir, Stdout: cmd.OutOrStdout(), Stderr: cmd.ErrOrStderr()}
+func Push(config *Config, stdout, stderr io.Writer) error {
+	git := GitRunner{WorkDir: config.DotfilesDir, Stdout: stdout, Stderr: stderr}
 	currentBranch, err := git.Output("branch", "--show-current")
 	if err != nil {
 		return err
 	}
 	if currentBranch != config.Sync.DefaultBranch {
-		_, _ = fmt.Fprintf(cmd.OutOrStdout(), "[sync] %sブランチではありません (%s)。自動pushをスキップします。\n", config.Sync.DefaultBranch, currentBranch)
+		_, _ = fmt.Fprintf(stdout, "[sync] %sブランチではありません (%s)。自動pushをスキップします。\n", config.Sync.DefaultBranch, currentBranch)
 		return nil
 	}
 
 	var autoPaths []string
 	var missing []string
 	for _, category := range config.Sync.Auto {
-		if info, statErr := os.Stat(repositoryPath(config, category)); statErr == nil && info.IsDir() {
+		if info, statErr := os.Stat(RepositoryPath(config, category)); statErr == nil && info.IsDir() {
 			autoPaths = append(autoPaths, category)
 			continue
 		}
@@ -213,11 +212,11 @@ func push(config *Config, cmd *cobra.Command) error {
 		}
 	}
 	if len(missing) > 0 {
-		_, _ = fmt.Fprintln(cmd.ErrOrStderr(), "[sync] WARNING: 追跡済みの自動同期カテゴリが見つかりません:")
+		_, _ = fmt.Fprintln(stderr, "[sync] WARNING: 追跡済みの自動同期カテゴリが見つかりません:")
 		for _, category := range missing {
-			_, _ = fmt.Fprintf(cmd.ErrOrStderr(), "  - %s\n", category)
+			_, _ = fmt.Fprintf(stderr, "  - %s\n", category)
 		}
-		_, _ = fmt.Fprintln(cmd.ErrOrStderr(), "誤削除ならgit restore、恒久削除ならdotfile delete-categoryを使用してください。")
+		_, _ = fmt.Fprintln(stderr, "誤削除ならgit restore、恒久削除ならdotfile delete-categoryを使用してください。")
 	}
 
 	for _, category := range autoPaths {
@@ -226,7 +225,7 @@ func push(config *Config, cmd *cobra.Command) error {
 		}
 	}
 	if len(autoPaths) == 0 {
-		_, _ = fmt.Fprintln(cmd.OutOrStdout(), "[sync] 自動同期カテゴリに変更はありません。")
+		_, _ = fmt.Fprintln(stdout, "[sync] 自動同期カテゴリに変更はありません。")
 		return nil
 	}
 	diffArgs := append([]string{"diff", "--cached", "--name-only", "--"}, autoPaths...)
@@ -235,7 +234,7 @@ func push(config *Config, cmd *cobra.Command) error {
 		return err
 	}
 	if changed == "" {
-		_, _ = fmt.Fprintln(cmd.OutOrStdout(), "[sync] 自動同期カテゴリに変更はありません。")
+		_, _ = fmt.Fprintln(stdout, "[sync] 自動同期カテゴリに変更はありません。")
 		return nil
 	}
 
@@ -250,7 +249,7 @@ func push(config *Config, cmd *cobra.Command) error {
 	if err := git.Run("push", "origin", config.Sync.DefaultBranch); err != nil {
 		return err
 	}
-	_, _ = fmt.Fprintf(cmd.OutOrStdout(), "[sync] Pushed: %s\n", message)
+	_, _ = fmt.Fprintf(stdout, "[sync] Pushed: %s\n", message)
 	return nil
 }
 
@@ -308,11 +307,11 @@ func uniqueBaseNames(output string) []string {
 	return names
 }
 
-func deleteCategory(config *Config, category string, cmd *cobra.Command) error {
+func DeleteCategory(config *Config, category string, stdout, stderr io.Writer) error {
 	if !categoryNamePattern.MatchString(category) || category == "." || category == ".." {
 		return fmt.Errorf("不正なカテゴリ名です: %s", category)
 	}
-	git := GitRunner{WorkDir: config.DotfilesDir, Stdout: cmd.OutOrStdout(), Stderr: cmd.ErrOrStderr()}
+	git := GitRunner{WorkDir: config.DotfilesDir, Stdout: stdout, Stderr: stderr}
 	currentBranch, err := git.Output("branch", "--show-current")
 	if err != nil {
 		return err
@@ -330,13 +329,13 @@ func deleteCategory(config *Config, category string, cmd *cobra.Command) error {
 
 	hadTracked := trackedCategory(git, category)
 	config.Sync.Auto = without(config.Sync.Auto, category)
-	if err := writeSyncConfig(repositoryPath(config, "sync.toml"), config.Sync); err != nil {
+	if err := writeSyncConfig(RepositoryPath(config, "sync.toml"), config.Sync); err != nil {
 		return err
 	}
 	if err := git.Run("reset", "-q", "HEAD", "--", category); err != nil && hadTracked {
 		return err
 	}
-	if err := os.RemoveAll(repositoryPath(config, category)); err != nil {
+	if err := os.RemoveAll(RepositoryPath(config, category)); err != nil {
 		return fmt.Errorf("カテゴリを削除できません: %w", err)
 	}
 	if err := git.Run("add", "--", "sync.toml"); err != nil {
@@ -357,7 +356,7 @@ func deleteCategory(config *Config, category string, cmd *cobra.Command) error {
 	if err := git.Run("push", "origin", config.Sync.DefaultBranch); err != nil {
 		return fmt.Errorf("pushに失敗しました。削除commitはローカルに残っています: %w", err)
 	}
-	_, _ = fmt.Fprintf(cmd.OutOrStdout(), "[sync] カテゴリを削除してpushしました: %s\n", category)
+	_, _ = fmt.Fprintf(stdout, "[sync] カテゴリを削除してpushしました: %s\n", category)
 	return nil
 }
 

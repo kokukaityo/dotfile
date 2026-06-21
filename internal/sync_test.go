@@ -6,8 +6,6 @@ import (
 	"path/filepath"
 	"strings"
 	"testing"
-
-	"github.com/spf13/cobra"
 )
 
 func TestGenerateCommitMsg(t *testing.T) {
@@ -37,7 +35,7 @@ func TestGenerateGitignorePreservesManualSection(t *testing.T) {
 		Sync:        SyncConfig{Ignore: []string{"raw"}},
 	}
 
-	if err := generateGitignore(config); err != nil {
+	if err := GenerateGitignore(config); err != nil {
 		t.Fatal(err)
 	}
 	data, err := os.ReadFile(filepath.Join(dir, ".gitignore"))
@@ -117,8 +115,9 @@ func TestPushPullAndDeleteCategory(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+	var stdout, stderr bytes.Buffer
 	writeTestFile(t, filepath.Join(first, "editor", "settings.json"), "two")
-	if err := push(config, testCommand()); err != nil {
+	if err := Push(config, &stdout, &stderr); err != nil {
 		t.Fatal(err)
 	}
 
@@ -131,14 +130,18 @@ func TestPushPullAndDeleteCategory(t *testing.T) {
 	runGit(t, second, "commit", "-m", "remote update")
 	runGit(t, second, "push", "origin", "develop")
 
-	if err := pull(config, testCommand()); err != nil {
+	stdout.Reset()
+	stderr.Reset()
+	if err := Pull(config, &stdout, &stderr); err != nil {
 		t.Fatal(err)
 	}
 	if _, err := os.Stat(filepath.Join(first, "editor", "remote.txt")); err != nil {
 		t.Fatalf("pull did not update worktree: %v", err)
 	}
 
-	if err := deleteCategory(config, "editor", testCommand()); err != nil {
+	stdout.Reset()
+	stderr.Reset()
+	if err := DeleteCategory(config, "editor", &stdout, &stderr); err != nil {
 		t.Fatal(err)
 	}
 	if _, err := os.Stat(filepath.Join(first, "editor")); !os.IsNotExist(err) {
@@ -169,11 +172,4 @@ func runGit(t *testing.T, dir string, args ...string) string {
 		t.Fatalf("git %v: %v", args, err)
 	}
 	return output
-}
-
-func testCommand() *cobra.Command {
-	command := &cobra.Command{}
-	command.SetOut(&bytes.Buffer{})
-	command.SetErr(&bytes.Buffer{})
-	return command
 }

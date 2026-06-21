@@ -24,14 +24,13 @@ func TestInitializeRepository(t *testing.T) {
 		},
 	}
 	hookFS := fstest.MapFS{
-		"lib/hooks/pre-push":   {Data: []byte("#!/usr/bin/env bash\nexit 0\n")},
-		"lib/hooks/post-merge": {Data: []byte("#!/usr/bin/env bash\nexit 0\n")},
+		"internal/hook/pre-push":   {Data: []byte("#!/usr/bin/env bash\nexit 0\n")},
+		"internal/hook/post-merge": {Data: []byte("#!/usr/bin/env bash\nexit 0\n")},
 	}
 	target := filepath.Join(t.TempDir(), "repository")
 	var stdout bytes.Buffer
-	app := &application{templateFS: templateFS, hookFS: hookFS, engineVersion: "1.0.0"}
 
-	if err := initializeRepository(target, app, &stdout); err != nil {
+	if err := InitializeRepository(target, templateFS, "1.0.0", hookFS, &stdout); err != nil {
 		t.Fatal(err)
 	}
 	if branch := runGit(t, target, "branch", "--show-current"); branch != "develop" {
@@ -54,18 +53,5 @@ func TestInitializeRepository(t *testing.T) {
 	}
 	if !strings.Contains(stdout.String(), "作成が完了") {
 		t.Fatalf("unexpected output: %s", stdout.String())
-	}
-}
-
-func TestRootCommandReturnsErrorWithoutExit(t *testing.T) {
-	existing := t.TempDir()
-	app := &application{templateFS: fstest.MapFS{}, hookFS: fstest.MapFS{}, engineVersion: "1.0.0"}
-	command := app.rootCommand()
-	command.SetArgs([]string{"init", existing})
-	command.SetOut(&bytes.Buffer{})
-	command.SetErr(&bytes.Buffer{})
-
-	if err := command.Execute(); err == nil {
-		t.Fatal("existing path did not return an error")
 	}
 }

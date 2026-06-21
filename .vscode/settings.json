@@ -36,9 +36,9 @@
     "files.exclude": {
         "dist/": true
     },
-    "files.watcherExclude": {
-        "dist/**": true
-    },
+    // "files.watcherExclude": {
+    //     "dist/**": true
+    // },
 
     // Spell checker
     "cSpell.words": ["dotfile", "gofmt", "gofumpt", "golangci", "symlink"]
