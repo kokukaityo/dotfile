@@ -1,3 +1,45 @@
 {
-    "window.title": "dotfiles : ${folderName}${separator}${dirty}${activeEditorShort}"
+    "window.title": "dotfiles : ${folderName}${separator}${dirty}${activeEditorShort}",
+    "editor.formatOnSave": true,
+    "files.eol": "\n",
+    "files.insertFinalNewline": true,
+    "files.trimTrailingWhitespace": true,
+
+    // Go
+    "go.lintTool": "golangci-lint",
+    "go.lintOnSave": "workspace",
+    "gopls": {
+        "formatting.gofumpt": true
+    },
+    "[go]": {
+        "editor.defaultFormatter": "golang.go",
+        "editor.codeActionsOnSave": {
+            "source.organizeImports": "always"
+        }
+    },
+
+    // Prettier (JSON, YAML, Markdown 等)
+    "prettier.tabWidth": 4,
+    "prettier.printWidth": 120,
+
+    // Shell (既存 Bash コード用)
+    "[shellscript]": {
+        "editor.defaultFormatter": "foxundermoon.shell-format"
+    },
+
+    // YAML
+    "[yaml]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+
+    // Explorer
+    "files.exclude": {
+        "dist/": true
+    },
+    "files.watcherExclude": {
+        "dist/**": true
+    },
+
+    // Spell checker
+    "cSpell.words": ["dotfile", "gofmt", "gofumpt", "golangci", "symlink"]
 }
