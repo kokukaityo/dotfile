@@ -22,7 +22,7 @@ func loadLinkConfig(path string) (LinkConfig, error) {
 	return config, nil
 }
 
-func linkAll(config *Config, stdout io.Writer) error {
+func LinkAll(config *Config, stdout io.Writer) error {
 	osKey, err := OSKey()
 	if err != nil {
 		return err

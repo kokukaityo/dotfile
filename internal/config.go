@@ -110,3 +110,8 @@ func majorVersion(version string) string {
 func (c *Config) VersionMismatch() bool {
 	return majorVersion(c.EngineVersion) != majorVersion(c.DataVersion)
 }
+
+func RepositoryPath(config *Config, names ...string) string {
+	parts := append([]string{config.DotfilesDir}, names...)
+	return filepath.Join(parts...)
+}

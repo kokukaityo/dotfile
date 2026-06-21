@@ -8,5 +8,5 @@ var TemplateFS embed.FS
 //go:embed VERSION
 var Version string
 
-//go:embed lib/hooks/pre-push lib/hooks/post-merge
+//go:embed internal/hook/pre-push internal/hook/post-merge
 var HookFS embed.FS

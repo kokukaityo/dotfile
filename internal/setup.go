@@ -12,7 +12,7 @@ import (
 
 const hookFileMode fs.FileMode = 0o755
 
-func initializeRepository(target string, app *application, stdout io.Writer) error {
+func InitializeRepository(target string, templateFS fs.FS, engineVersion string, hookFS fs.FS, stdout io.Writer) error {
 	target, err := ExpandHome(target)
 	if err != nil {
 		return err
@@ -28,11 +28,11 @@ func initializeRepository(target string, app *application, stdout io.Writer) err
 	}
 
 	_, _ = fmt.Fprintf(stdout, "[dotfile] データリポジトリを作成: %s\n", target)
-	if err := extractTemplate(app.templateFS, target); err != nil {
+	if err := extractTemplate(templateFS, target); err != nil {
 		return err
 	}
 
-	config, err := loadConfig(target, app.engineVersion)
+	config, err := loadConfig(target, engineVersion)
 	if err != nil {
 		return err
 	}
@@ -40,7 +40,7 @@ func initializeRepository(target string, app *application, stdout io.Writer) err
 	if err := git.Run("init", "-b", config.Sync.DefaultBranch); err != nil {
 		return err
 	}
-	if err := setupRepository(config, app.hookFS, stdout); err != nil {
+	if err := SetupRepository(config, hookFS, stdout); err != nil {
 		return err
 	}
 	if err := git.Run("add", "-A"); err != nil {
@@ -78,7 +78,7 @@ func extractTemplate(templateFS fs.FS, target string) error {
 	})
 }
 
-func setupRepository(config *Config, hookFS fs.FS, stdout io.Writer) error {
+func SetupRepository(config *Config, hookFS fs.FS, stdout io.Writer) error {
 	git := GitRunner{WorkDir: config.DotfilesDir, Stdout: stdout}
 	if !git.Success("rev-parse", "--git-dir") {
 		return fmt.Errorf("gitリポジトリではありません: %s", config.DotfilesDir)
@@ -95,10 +95,10 @@ func setupRepository(config *Config, hookFS fs.FS, stdout io.Writer) error {
 	if err := git.Run("config", "core.symlinks", "true"); err != nil {
 		return err
 	}
-	if err := generateGitignore(config); err != nil {
+	if err := GenerateGitignore(config); err != nil {
 		return err
 	}
-	if err := linkAll(config, stdout); err != nil {
+	if err := LinkAll(config, stdout); err != nil {
 		return err
 	}
 	_, _ = fmt.Fprintln(stdout, "[dotfile] Setup complete.")
@@ -110,7 +110,7 @@ func installHooks(dotfilesDir string, hookFS fs.FS) error {
 	if err := os.MkdirAll(hookDir, 0o755); err != nil {
 		return fmt.Errorf("hookディレクトリを作成できません: %w", err)
 	}
-	for _, source := range []string{"lib/hooks/pre-push", "lib/hooks/post-merge"} {
+	for _, source := range []string{"internal/hook/pre-push", "internal/hook/post-merge"} {
 		data, err := fs.ReadFile(hookFS, source)
 		if err != nil {
 			return fmt.Errorf("hookを読み込めません (%s): %w", source, err)
