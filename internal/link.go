@@ -60,7 +60,7 @@ func LinkAll(config *Config, stdout io.Writer) error {
 
 		_, _ = fmt.Fprintf(stdout, "[%s]\n", categoryName)
 		timestamp := time.Now().Format("20060102150405")
-		categoryBackupDir := RepositoryPath(config, backupDir, categoryName, timestamp)
+		categoryBackupDir := RepositoryPath(config, backupDir, categoryName+"_"+timestamp)
 		sources := make([]string, 0, len(entries))
 		for source := range entries {
 			sources = append(sources, source)

@@ -66,7 +66,7 @@ TOML
   assert_output --partial "backed up:"
 
   local backup_count
-  backup_count=$(ls "$DOTFILES_DIR"/.backup/editor/*/existing-file 2>/dev/null | wc -l)
+  backup_count=$(ls "$DOTFILES_DIR"/.backup/editor_*/existing-file 2>/dev/null | wc -l)
   [[ "$backup_count" -ge 1 ]] || fail "expected backup file in .backup/editor/"
 
   local old_backup_count

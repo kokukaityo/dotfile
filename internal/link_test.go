@@ -39,7 +39,7 @@ func TestCreateLinkBackup(t *testing.T) {
 		t.Skip("symlink creation not available")
 	}
 	dir := t.TempDir()
-	backupDir := filepath.Join(dir, ".backup", "testcat", "20260621120000")
+	backupDir := filepath.Join(dir, ".backup", "testcat_20260621120000")
 	source := filepath.Join(dir, "source.txt")
 	target := filepath.Join(dir, "target.txt")
 
@@ -73,7 +73,7 @@ func TestCreateLinkBackupDirectory(t *testing.T) {
 		t.Skip("symlink creation not available")
 	}
 	dir := t.TempDir()
-	backupDir := filepath.Join(dir, ".backup", "testcat", "20260621120000")
+	backupDir := filepath.Join(dir, ".backup", "testcat_20260621120000")
 	source := filepath.Join(dir, "srcdir")
 	target := filepath.Join(dir, "targetdir")
 
