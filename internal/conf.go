@@ -77,11 +77,10 @@ var (
 )
 
 // SyncConfig は sync.toml をそのまま構造体にしたもの。
-// カテゴリの同期モード（auto/manual/ignore）とブランチ設定を保持する。
+// カテゴリの同期モード（auto/ignore、どちらにも属さないカテゴリは manual 扱い）とブランチ設定を保持する。
 type SyncConfig struct {
 	DefaultBranch string   `toml:"default_branch"`
 	Auto          []string `toml:"auto"`
-	Manual        []string `toml:"manual"`
 	Ignore        []string `toml:"ignore"`
 }
 

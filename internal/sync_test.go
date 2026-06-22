@@ -58,7 +58,6 @@ func TestWriteSyncConfig(t *testing.T) {
 	expected := SyncConfig{
 		DefaultBranch: "develop",
 		Auto:          []string{"editor"},
-		Manual:        []string{},
 		Ignore:        []string{"raw"},
 	}
 	if err := writeSyncConfig(path, expected); err != nil {
@@ -106,7 +105,7 @@ func TestPushPullAndDeleteCategory(t *testing.T) {
 	runGit(t, first, "config", "user.email", "dotfile@example.invalid")
 	runGit(t, first, "remote", "add", "origin", remote)
 	writeTestFile(t, filepath.Join(first, Setting.Path.InfraVersionFile), "1.0.0")
-	writeTestFile(t, filepath.Join(first, Setting.Path.SyncConfigFile), "default_branch = \"develop\"\nauto = [\"editor\"]\nmanual = []\nignore = []\n")
+	writeTestFile(t, filepath.Join(first, Setting.Path.SyncConfigFile), "default_branch = \"develop\"\nauto = [\"editor\"]\nignore = []\n")
 	writeTestFile(t, filepath.Join(first, "editor", "settings.json"), "one")
 	runGit(t, first, "add", "-A")
 	runGit(t, first, "commit", "-m", "initial")

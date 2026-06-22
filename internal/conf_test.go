@@ -12,7 +12,6 @@ func TestLoadConfig(t *testing.T) {
 	writeTestFile(t, filepath.Join(dir, Setting.Path.SyncConfigFile), `
 default_branch = "develop"
 auto = ["editor"]
-manual = ["shell"]
 ignore = ["raw"]
 `)
 
