@@ -19,7 +19,7 @@ func TestInitializeRepository(t *testing.T) {
 
 	templateFS := fstest.MapFS{
 		Setting.Path.TemplateDir + "/" + Setting.Path.SyncConfigFile: {
-			Data: []byte("default_branch = \"develop\"\nauto = []\nmanual = []\nignore = []\n"),
+			Data: []byte("default_branch = \"develop\"\nauto = []\nignore = []\n"),
 		},
 	}
 	hookFS := make(fstest.MapFS)

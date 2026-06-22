@@ -317,7 +317,7 @@ func generateCommitMsg(git GitRunner, paths []string) (string, error) {
 }
 
 // DeleteCategory はカテゴリを sync.toml・ファイルシステム・Git 履歴から一括削除する。
-// auto/manual/ignore いずれの種別でも動作し、どの配列にも属さないカテゴリも
+// auto/ignore および暗黙の manual カテゴリでも動作し、どの配列にも属さないカテゴリも
 // ディレクトリが存在すれば削除できる。
 // sync.toml 更新 + カテゴリ削除 + push を1コミットにまとめるトランザクション的な処理。
 // デフォルトブランチ以外や sync.toml に未コミット変更がある場合は拒否する。
@@ -335,9 +335,8 @@ func DeleteCategory(config *Config, category string, stdout, stderr io.Writer) e
 	}
 
 	inAuto := slices.Contains(config.Sync.Auto, category)
-	inManual := slices.Contains(config.Sync.Manual, category)
 	inIgnore := slices.Contains(config.Sync.Ignore, category)
-	inConfig := inAuto || inManual || inIgnore
+	inConfig := inAuto || inIgnore
 
 	if !inConfig {
 		if _, err := os.Stat(RepositoryPath(config, category)); os.IsNotExist(err) {
@@ -355,8 +354,6 @@ func DeleteCategory(config *Config, category string, stdout, stderr io.Writer) e
 
 	if inAuto {
 		config.Sync.Auto = slices.DeleteFunc(config.Sync.Auto, func(s string) bool { return s == category })
-	} else if inManual {
-		config.Sync.Manual = slices.DeleteFunc(config.Sync.Manual, func(s string) bool { return s == category })
 	} else if inIgnore {
 		config.Sync.Ignore = slices.DeleteFunc(config.Sync.Ignore, func(s string) bool { return s == category })
 	}
@@ -407,12 +404,10 @@ func DeleteCategory(config *Config, category string, stdout, stderr io.Writer) e
 	switch {
 	case inAuto:
 		commitMsg = "delete: auto category " + category
-	case inManual:
-		commitMsg = "delete: manual category " + category
 	case inIgnore:
 		commitMsg = "delete: ignore category " + category
 	default:
-		commitMsg = "delete: category " + category
+		commitMsg = "delete: manual category " + category
 	}
 
 	args := []string{"commit", "--only", "-m", commitMsg, "--"}

@@ -49,7 +49,6 @@ teardown() {
   cat > "$DOTFILES_DIR/sync.toml" <<TOML
 default_branch = "main"
 auto = ["editor"]
-manual = ["docs"]
 ignore = ["backup"]
 TOML
   git -C "$DOTFILES_DIR" add -A
@@ -64,9 +63,6 @@ TOML
   assert_output --partial "カテゴリを削除してpush"
 
   assert_file_not_exists "$DOTFILES_DIR/docs"
-
-  run cat "$DOTFILES_DIR/sync.toml"
-  refute_output --partial '"docs"'
 
   local after_count
   after_count=$(git -C "$DOTFILES_DIR" rev-list --count HEAD)

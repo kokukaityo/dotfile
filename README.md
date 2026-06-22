@@ -89,14 +89,13 @@ command -v dotfile >/dev/null && dotfile status
 ```toml
 default_branch = "main"
 auto = ["ai-agent", "editor", "shell"]
-manual = []
 ignore = ["backup", "raw"]
 ```
 
 - `default_branch`: pull、push、カテゴリ削除で使用するブランチ
 - `auto`: `dotfile push` の対象
-- `manual`: Gitで追跡するが自動pushしないカテゴリ
 - `ignore`: 自動生成される `.gitignore` に追加するカテゴリ
+- どちらにも属さないカテゴリは manual 扱い（Git で追跡するが自動 push しない）
 
 ### link.toml
 
