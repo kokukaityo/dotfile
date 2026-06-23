@@ -34,6 +34,19 @@
 - 対応が完了した plan や役割を終えた note は `.agents/archive/` に移動する。`/archive` スキルで判定・移動できる。
 - 一時的な進捗、ツール出力、会話だけで十分な情報は `.agents/` に残さない。
 
+## ビルド・テストの実行
+
+`go test` や `go build` を直接実行しない。必ず Makefile 経由で実行すること。
+
+```bash
+make fmt    # gofumpt
+make lint   # golangci-lint
+make test   # go test（GOTMPDIR=dist/ を設定済み）
+make build  # go build → dist/dotfile
+```
+
+Makefile は `GOTMPDIR` を `dist/` に設定しており、ビルド・テストの一時ファイルがワークスペースを汚さないようになっている。`go test ./...` を直接叩くと一時ファイルがワークスペース内に散らばる。
+
 ## ドキュメント更新
 
 - 利用方法、コマンド、設定形式の変更: `README.md`
