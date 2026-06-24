@@ -12,6 +12,7 @@ import (
 )
 
 func TestInitializeRepository(t *testing.T) {
+	stubServiceRegistration(t)
 	t.Setenv("GIT_AUTHOR_NAME", "dotfile test")
 	t.Setenv("GIT_AUTHOR_EMAIL", "dotfile@example.invalid")
 	t.Setenv("GIT_COMMITTER_NAME", "dotfile test")
@@ -55,4 +56,28 @@ func TestInitializeRepository(t *testing.T) {
 	if !strings.Contains(stdout.String(), "作成が完了") {
 		t.Fatalf("unexpected output: %s", stdout.String())
 	}
+}
+
+func stubServiceRegistration(t *testing.T) {
+	t.Helper()
+	originalGOOS := serviceGOOS
+	originalExecutable := serviceExecutable
+	originalHomeDir := serviceHomeDir
+	originalRunCommand := serviceRunCommand
+	serviceGOOS = "windows"
+	serviceExecutable = func() (string, error) {
+		return filepath.Join(t.TempDir(), "dotfile.exe"), nil
+	}
+	serviceHomeDir = func() (string, error) {
+		return t.TempDir(), nil
+	}
+	serviceRunCommand = func(string, ...string) error {
+		return nil
+	}
+	t.Cleanup(func() {
+		serviceGOOS = originalGOOS
+		serviceExecutable = originalExecutable
+		serviceHomeDir = originalHomeDir
+		serviceRunCommand = originalRunCommand
+	})
 }
