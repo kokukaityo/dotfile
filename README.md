@@ -50,6 +50,8 @@ command -v dotfile >/dev/null && dotfile pull
 command -v dotfile >/dev/null && dotfile status
 ```
 
+`dotfile install` を実行すると、ファイル監視サービスが OS のログイン時自動起動に登録される。以降は `dotfile push` を手動で叩く必要はない。手動で監視プロセスを起動する場合は `dotfile watch` を使う。
+
 ## コマンド
 
 | コマンド                         | 説明                                          |
@@ -59,6 +61,7 @@ command -v dotfile >/dev/null && dotfile status
 | `dotfile link`                   | OSに応じたsymlinkを配置                       |
 | `dotfile pull`                   | リモートから同期                              |
 | `dotfile push`                   | autoカテゴリの変更をcommitしてpush            |
+| `dotfile watch`                  | ファイル変更を監視して自動push                |
 | `dotfile delete-category <name>` | カテゴリを設定とGit履歴から削除               |
 | `dotfile gitignore`              | `.gitignore` の自動生成部分を更新             |
 | `dotfile status`                 | コンフリクト退避状態を表示                    |

@@ -119,6 +119,9 @@ func SetupRepository(config *Config, hookFS fs.FS, stdout io.Writer) error {
 	if err := GenerateGitignore(config); err != nil {
 		return err
 	}
+	if err := RegisterService(config, stdout); err != nil {
+		_, _ = fmt.Fprintf(stdout, "[dotfile] WARNING: watchサービスの登録に失敗しました: %v\n", err)
+	}
 	_, _ = fmt.Fprintln(stdout, "[dotfile] Setup complete.")
 	return nil
 }

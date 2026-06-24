@@ -53,7 +53,7 @@ func GenerateGitignore(config *Config) error {
 	for _, category := range config.Sync.Ignore {
 		output.WriteString(category + "/\n")
 	}
-	output.WriteString("\n" + conflictMarkerFile + "\n" + hookDir + "/\n")
+	output.WriteString("\n" + conflictMarkerFile + "\n" + watchPIDFile + "\n" + hookDir + "/\n")
 	output.WriteString(gitignoreMarkerEnd + "\n")
 
 	if err := os.WriteFile(path, []byte(output.String()), 0o644); err != nil {

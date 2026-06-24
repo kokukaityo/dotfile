@@ -39,6 +39,7 @@ func (a *application) rootCommand() *cobra.Command {
 		a.linkCommand(),
 		a.pullCommand(),
 		a.pushCommand(),
+		a.watchCommand(),
 		a.deleteCategoryCommand(),
 		a.gitignoreCommand(),
 		a.statusCommand(),
