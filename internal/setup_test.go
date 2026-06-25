@@ -13,10 +13,10 @@ import (
 
 func TestInitializeRepository(t *testing.T) {
 	stubServiceRegistration(t)
-	t.Setenv("GIT_AUTHOR_NAME", "dotfile test")
-	t.Setenv("GIT_AUTHOR_EMAIL", "dotfile@example.invalid")
-	t.Setenv("GIT_COMMITTER_NAME", "dotfile test")
-	t.Setenv("GIT_COMMITTER_EMAIL", "dotfile@example.invalid")
+	t.Setenv("GIT_AUTHOR_NAME", "dotfiles test")
+	t.Setenv("GIT_AUTHOR_EMAIL", "dotfiles@example.invalid")
+	t.Setenv("GIT_COMMITTER_NAME", "dotfiles test")
+	t.Setenv("GIT_COMMITTER_EMAIL", "dotfiles@example.invalid")
 
 	templateFS := fstest.MapFS{
 		Setting.Path.TemplateDir + "/" + Setting.Path.SyncConfigFile: {
@@ -66,7 +66,7 @@ func stubServiceRegistration(t *testing.T) {
 	originalRunCommand := serviceRunCommand
 	serviceGOOS = "windows"
 	serviceExecutable = func() (string, error) {
-		return filepath.Join(t.TempDir(), "dotfile.exe"), nil
+		return filepath.Join(t.TempDir(), "dotfiles.exe"), nil
 	}
 	serviceHomeDir = func() (string, error) {
 		return t.TempDir(), nil
