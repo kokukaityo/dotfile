@@ -54,6 +54,7 @@ ignore = ["backup"]
 
 - 同じカテゴリを `auto` と `ignore` の両方に書くことはできません。
 - カテゴリ名の重複もエラーになります。
+- `dotfiles delete-category <name>` を実行すると、該当カテゴリが `auto`/`ignore` から自動で削除されます。
 
 ## link.toml
 
