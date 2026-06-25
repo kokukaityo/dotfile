@@ -7,8 +7,6 @@
 .env*
 
 # Ignored categories (ignore in sync.toml)
-backup/
-raw/
 vscode/
 
 .dotfiles-hook/
