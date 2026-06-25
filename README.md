@@ -220,16 +220,6 @@ Windows で symlink を作成するには、開発者モードの有効化が必
 
 設定 → システム → 開発者向け → 開発者モード を ON にしてください。
 
-### push が pre-push hook でブロックされた
-
-pre-push hook がシークレットらしきパターンを検出しています。差分を確認し、API キーやトークンが含まれていないか確認してください。
-
-誤検知の場合:
-
-```bash
-SKIP_SECRET_SCAN=1 git push
-```
-
 ### local モードと remote モードの違い
 
 `sync.toml` の `mode` で切り替えます。
