@@ -110,7 +110,7 @@ make exe-version
 
 ```bash
 # ~/dotfiles-test/sync.toml を編集して ignore に追加
-# ignore = ["backup", "raw", "secret-stuff"]
+# ignore = ["vscode", "secret-stuff"]
 make exe-gitignore
 ```
 

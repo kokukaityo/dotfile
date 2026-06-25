@@ -29,7 +29,7 @@
 mode = "local"
 default_branch = "main"
 auto = ["ai-agent", "shell"]
-ignore = ["backup", "raw", "vscode"]
+ignore = ["vscode"]
 ```
 
 > `vscode` カテゴリは VS Code に標準の Settings Sync 機能があるため、デフォルトでは `ignore`（Git 追跡外）です。dotfiles-bridge で Git 管理したい場合は `ignore` から外して `auto` に移動してください。
