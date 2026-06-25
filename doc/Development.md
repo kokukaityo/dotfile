@@ -20,7 +20,7 @@ npm install
 
 | コマンド     | 内容                    |
 | ------------ | ----------------------- |
-| `make build` | `dist/dotfile` を生成   |
+| `make build` | `dist/dotfiles` を生成   |
 | `make lint`  | golangci-lintを実行     |
 | `make fmt`   | Goコードをgofumptで整形 |
 | `make test`  | 全Goテストを実行        |
@@ -32,7 +32,7 @@ npm install
 ## コーディング規約
 
 - ユーザー向けメッセージは日本語にする。
-- エラーは文脈を付けて返し、`internal/engine` から `os.Exit` を呼ばない。
+- エラーは文脈を付けて返し、`internal` から `os.Exit` を呼ばない。
 - Git操作は `GitRunner` を通し、対象リポジトリとpathspecを明示する。
 - ファイル権限は `0o755` のような8進リテラルで記述する。
 - 外部入力となるパスやブランチ名は利用前に検証する。

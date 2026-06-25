@@ -22,7 +22,7 @@ var (
 	gitattributesLine = Setting.Git.GitattributesLine
 )
 
-// InitializeRepository は dotfile init のフロー全体を実行する。
+// InitializeRepository は dotfiles init のフロー全体を実行する。
 // テンプレート展開 → git init → SetupRepository → add + commit まで一括で行う。
 // 対象パスが既に存在する場合はエラーにして上書きを防ぐ。
 func InitializeRepository(target string, templateFS fs.FS, hookFS fs.FS, stdout io.Writer) error {
@@ -40,7 +40,7 @@ func InitializeRepository(target string, templateFS fs.FS, hookFS fs.FS, stdout 
 		return fmt.Errorf("初期化先を確認できません: %w", err)
 	}
 
-	fmt.Fprintf(stdout, "[dotfile] データリポジトリを作成: %s\n", target) //nolint:errcheck
+	fmt.Fprintf(stdout, "[dotfiles] データリポジトリを作成: %s\n", target) //nolint:errcheck
 	if err := extractTemplate(templateFS, target); err != nil {
 		return err
 	}
@@ -66,7 +66,7 @@ func InitializeRepository(target string, templateFS fs.FS, hookFS fs.FS, stdout 
 		return err
 	}
 
-	fmt.Fprintln(stdout, "[dotfile] データリポジトリの作成が完了しました") //nolint:errcheck
+	fmt.Fprintln(stdout, "[dotfiles] データリポジトリの作成が完了しました") //nolint:errcheck
 	return nil
 }
 
@@ -120,13 +120,13 @@ func SetupRepository(config *Config, hookFS fs.FS, stdout io.Writer) error {
 		return err
 	}
 	if err := RegisterService(config, stdout); err != nil {
-		_, _ = fmt.Fprintf(stdout, "[dotfile] WARNING: watchサービスの登録に失敗しました: %v\n", err)
+		_, _ = fmt.Fprintf(stdout, "[dotfiles] WARNING: watchサービスの登録に失敗しました: %v\n", err)
 	}
-	_, _ = fmt.Fprintln(stdout, "[dotfile] Setup complete.")
+	_, _ = fmt.Fprintln(stdout, "[dotfiles] Setup complete.")
 	return nil
 }
 
-// installHooks は埋め込みの hook スクリプトを .dotfile-hook/ に書き出す。
+// installHooks は埋め込みの hook スクリプトを .dotfiles-hook/ に書き出す。
 // .git/hooks/ ではなく core.hooksPath で参照させることで、
 // データリポジトリ側に hook を置きつつ Git 追跡対象外にできる。
 func installHooks(dotfilesDir string, hookFS fs.FS) error {

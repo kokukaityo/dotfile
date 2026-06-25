@@ -1,4 +1,4 @@
-# dotfiles — AI エージェント向けガイド
+# dotfiles-bridge — AI エージェント向けガイド
 
 このファイルは詳細仕様を重複して持たず、既存ドキュメントへの案内と作業上の最低限のルールだけを定める。
 
@@ -16,7 +16,7 @@
 ## 作業ルール
 
 - 変更対象の周辺コードと関連ドキュメントを読んでから編集する。
-- ユーザー固有データやシークレットをエンジンおよび `template/` に含めない。
+- ユーザー固有データやシークレットを本体および `template/` に含めない。
 - Git、symlink、ファイル削除を伴う検証は、実データではなく隔離した環境で行う。
 - 検証できなかった項目は、完了報告に理由とともに記載する。
 
@@ -50,10 +50,15 @@
 make fmt    # gofumpt
 make lint   # golangci-lint
 make test   # go test（GOTMPDIR=dist/ を設定済み）
-make build  # go build → dist/dotfile
+make build  # go build → dist/dotfiles
 ```
 
 Makefile は `GOTMPDIR` を `dist/` に設定しており、ビルド・テストの一時ファイルがワークスペースを汚さないようになっている。`go test ./...` を直接叩くと一時ファイルがワークスペース内に散らばる。
+
+## 命名
+
+- コマンド名は `dotfiles`（複数形）。`dotfile`（単数形）は使わない。
+- GitHub URL / Go module path は `dotfiles-bridge`。`dotfiles` 単体のリポジトリ名は使わない。
 
 ## ドキュメント更新
 
