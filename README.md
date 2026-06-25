@@ -99,19 +99,36 @@ make build
 
 ## クイックスタート
 
-### 新しく始める
+### 1. データリポジトリを作成する
 
 ```bash
-# データリポジトリを作成
 dotfiles init ~/dotfiles
-cd ~/dotfiles
+```
 
-# リモートに接続（任意 — local モードなら不要）
+テンプレートからカテゴリ（ai-agent, shell, vscode）、設定ファイル、Git hooks が展開され、初回コミットが作成されます。
+
+### 2. symlink を配置する
+
+```bash
+cd ~/dotfiles
+dotfiles link
+```
+
+各カテゴリの `link.toml` に基づいて、OS に応じた symlink を配置します。配置先に既存ファイルがある場合は自動的にバックアップされます。
+
+この時点でローカルでの一元管理が使えます。設定ファイルを編集すると、symlink 経由で各アプリに即座に反映されます。
+
+### 3. リモートに接続する（任意）
+
+複数マシン間で同期する場合は、リモートリポジトリを接続し、`sync.toml` の `mode` を `"remote"` に変更します。ローカルのみで使う場合はこの手順は不要です。
+
+```bash
+cd ~/dotfiles
+# sync.toml: mode = "remote" に変更
+
 git remote add origin git@github.com:<user>/<repo>.git
 git push -u origin main
 ```
-
-`dotfiles init` を実行すると、テンプレートからカテゴリ（ai-agent, shell, vscode）、設定ファイル、Git hooks が展開されます。`dotfiles link` も自動実行され、symlink が配置されます。
 
 ### 別のマシンで使う
 
@@ -121,6 +138,8 @@ export DOTFILES_DIR="$HOME/dotfiles"
 dotfiles install
 ```
 
+`dotfiles install` は hooks・gitignore の設定と symlink の配置をまとめて行います。
+
 ### 複数マシン間の同期フロー
 
 `mode = "remote"` の場合、設定の変更は以下の流れで同期されます。
@@ -128,21 +147,9 @@ dotfiles install
 ```
 PC-A で設定を編集
   → dotfiles push（または watch で自動 push）
-  → PC-B で dotfiles pull（またはシェル起動時に自動 pull）
+  → PC-B で dotfiles pull
   → symlink 経由で即反映
 ```
-
-### シェル起動時に自動同期（任意）
-
-`~/.bashrc` や `~/.zshrc` に追加:
-
-```bash
-export DOTFILES_DIR="$HOME/dotfiles"
-command -v dotfiles >/dev/null && dotfiles pull
-command -v dotfiles >/dev/null && dotfiles status
-```
-
-`dotfiles install` を実行すると、ファイル監視サービスが OS のログイン時自動起動に登録されます。以降は設定ファイルの変更が自動で commit・push されます。
 
 ## コマンド
 
