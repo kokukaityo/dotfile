@@ -98,14 +98,11 @@ command -v dotfiles >/dev/null && dotfiles status
 
 ```text
 ~/dotfiles/
-├── .infra-version
-├── sync.toml
-├── ai-agent/
-│   └── link.toml
-├── editor/
-│   └── link.toml
-└── shell/
-    └── link.toml
+├── .infra-version        # 互換バージョン（自動生成）
+├── sync.toml             # 同期設定
+└── <category>/           # カテゴリディレクトリ（自由に追加）
+    ├── link.toml         # symlink 定義
+    └── (設定ファイル群)
 ```
 
 データリポジトリは次の順で解決されます:
@@ -114,42 +111,7 @@ command -v dotfiles >/dev/null && dotfiles status
 2. 現在の Git ルート（`.infra-version` がある場合）
 3. `~/dotfiles`
 
-### sync.toml
-
-```toml
-mode = "local"
-default_branch = "main"
-auto = ["ai-agent", "editor", "shell"]
-ignore = ["backup", "raw"]
-```
-
-| キー             | 説明                                                                 |
-| ---------------- | -------------------------------------------------------------------- |
-| `mode`           | `"local"`（コミットのみ）または `"remote"`（origin との同期も行う）  |
-| `default_branch` | pull・push・カテゴリ削除で使用するブランチ                           |
-| `auto`           | `dotfiles push` の対象カテゴリ                                       |
-| `ignore`         | `.gitignore` に追加するカテゴリ                                      |
-
-どちらにも属さないカテゴリは manual 扱い（Git で追跡するが自動 push しない）。
-
-カテゴリ名は英数字・`_`・`.`・`-` が使用でき、先頭は英数字または `_` にする必要があります。
-
-### link.toml
-
-OS キーの下に、リンク元（カテゴリ内のファイル）とリンク先の一覧を定義します。Windows の OS キーは `win32`。
-
-```toml
-[darwin]
-"settings.json" = ["~/Library/Application Support/Code/User/settings.json"]
-
-[linux]
-"settings.json" = ["~/.config/Code/User/settings.json"]
-
-[win32]
-"settings.json" = ["~/AppData/Roaming/Code/User/settings.json"]
-```
-
-既存のリンク先はデータリポジトリの `.backup/<category>/<timestamp>/` に退避されます。
+設定ファイル（`sync.toml`・`link.toml`）の詳細は、データリポジトリ内の README（[template/README.md](template/README.md)）を参照してください。
 
 ## コンフリクト
 

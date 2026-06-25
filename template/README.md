@@ -44,13 +44,13 @@ ignore = ["backup"]
 
 ### カテゴリの同期モード
 
-各カテゴリは `auto`・`ignore`・manual のいずれかに分類されます。
+各カテゴリは `auto`・`ignore`・`manual` のいずれかに分類されます。
 
 | モード   | 定義方法                          | 動作                                                   |
 | -------- | --------------------------------- | ------------------------------------------------------ |
-| auto     | `auto` に記載                     | `dotfiles push` で自動 commit・push される             |
-| ignore   | `ignore` に記載                   | `.gitignore` に追加され、Git で追跡しない              |
-| manual   | どちらにも記載しない              | Git で追跡するが、自動 push はしない（手動 commit 用） |
+| `auto`   | `auto` に記載                     | `dotfiles push` で自動 commit・push される             |
+| `ignore` | `ignore` に記載                   | `.gitignore` に追加され、Git で追跡しない              |
+| `manual` | どちらにも記載しない              | Git で追跡するが、自動 push はしない（手動 commit 用） |
 
 - 同じカテゴリを `auto` と `ignore` の両方に書くことはできません。
 - カテゴリ名の重複もエラーになります。
@@ -72,11 +72,11 @@ ignore = ["backup"]
 
 ### OS キー
 
-| キー     | OS      |
-| -------- | ------- |
-| `darwin` | macOS   |
-| `linux`  | Linux   |
-| `win32`  | Windows |
+| キー     | OS      | 由来                                         |
+| -------- | ------- | -------------------------------------------- |
+| `darwin` | macOS   | macOS の基盤カーネル名（Go の `runtime.GOOS`）|
+| `linux`  | Linux   | Go の `runtime.GOOS`                         |
+| `win32`  | Windows | Node.js の `process.platform` に準拠         |
 
 現在の OS に該当するセクションだけが処理されます。他の OS のセクションは無視されるので、1つの `link.toml` に全 OS 分をまとめて書けます。
 
