@@ -12,7 +12,6 @@
 
 ```text
 ~/dotfiles/
-├── .infra-version        # 互換バージョン（自動生成・編集不要）
 ├── sync.toml             # 同期設定
 └── <category>/           # カテゴリディレクトリ（自由に追加）
     ├── link.toml         # symlink 定義

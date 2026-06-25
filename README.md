@@ -92,32 +92,30 @@ command -v dotfiles >/dev/null && dotfiles status
 | `dotfiles status`                 | コンフリクト退避状態を表示                 |
 | `dotfiles version`                | バージョン情報を表示                       |
 
+データリポジトリは次の順で解決されます:
+
+1. 環境変数 `DOTFILES_DIR`
+2. 現在の Git ルート（`sync.toml` がある場合）
+3. `~/dotfiles`
+
 ## データリポジトリ
 
 `dotfiles init` で作成されるデータリポジトリの構成:
 
 ```text
 ~/dotfiles/
-├── .infra-version        # 互換バージョン（自動生成）
 ├── sync.toml             # 同期設定
 └── <category>/           # カテゴリディレクトリ（自由に追加）
     ├── link.toml         # symlink 定義
     └── (設定ファイル群)
 ```
 
-データリポジトリは次の順で解決されます:
-
-1. 環境変数 `DOTFILES_DIR`
-2. 現在の Git ルート（`.infra-version` がある場合）
-3. `~/dotfiles`
-
 設定ファイル（`sync.toml`・`link.toml`）の詳細は、データリポジトリ内の README（[template/README.md](template/README.md)）を参照してください。
 
 ## コンフリクト
 
 pull 時にローカルとリモートが分岐していた場合、ローカル側を `conflict/<hostname>/<timestamp>` ブランチへ退避し、既定ブランチをリモートへ戻します。
-
-未解決状態では `.conflict-pending` が作成され、`dotfiles status` が警告を表示します。
+`conflict/*` ブランチが残っている間、`dotfiles status` が警告を表示します。
 
 ## 既知の制約
 
