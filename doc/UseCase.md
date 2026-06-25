@@ -38,19 +38,19 @@ Claude Code、Codex、Gemini CLI などの AI エージェント設定を、1箇
 - AI エージェントの設定は使い込むほど洗練されていきます。dotfiles-bridge で管理すれば「育てた」設定がどの端末でもすぐに使えます
 - Git で管理するため、設定の変更履歴が残ります。「あの設定をいつ変えたか」「前の状態に戻したい」に対応できます
 
-## VS Code 設定の管理
+## VS Code 系エディタ間の設定共有
 
-> **注意**: VS Code には標準の [Settings Sync](https://code.visualstudio.com/docs/editor/settings-sync) 機能があります。まずそちらの利用を検討してください。
+VS Code、Cursor、Windsurf、VSCodium など、同じ設定形式を使うエディタ間で設定を共有します。1つの設定ファイルを複数エディタに同時配置できるため、エディタを乗り換えたり併用したりする際に設定を個別に管理する必要がありません。
 
-dotfiles-bridge で VS Code 設定を管理するメリットは、`git diff`, `git log`, `git revert` 等の Git 操作で設定の変更履歴を細かく追跡・復元できる点です。「いつ、何を変えたか」を正確に把握し、任意の時点に戻せます。
+> **注意**: VS Code 単体の同期だけが目的なら、標準の [Settings Sync](https://code.visualstudio.com/docs/editor/settings-sync) で十分です。dotfiles-bridge が活きるのは、複数の VS Code 系エディタに同じ設定を配りたい場合とGit によって標準機能よりも自由度の高いバージョン管理が可能となります。
 
 ### 標準同期との併用に関する注意
 
-dotfiles-bridge と VS Code の標準 Settings Sync を同時に使うと、互いに設定を上書きし合うコンフリクトが発生します。dotfiles-bridge を使う場合は、VS Code 側の Settings Sync を無効にしてください。
+dotfiles-bridge と VS Code の標準 Settings Sync を同時に使うと、互いに設定を上書きし合うコンフリクトが発生します。dotfiles-bridge の同期機能を使う場合は、VS Code 側の Settings Sync を無効にしてください。
 
 ### 初期状態
 
-`dotfiles init` で生成される `vscode` カテゴリはデフォルトで `ignore`（Git 追跡外）です。VS Code に標準の同期機能があるためです。dotfiles-bridge で管理する場合は、`sync.toml` の `ignore` から `vscode` を外し、`auto` に追加してください。
+`dotfiles init` で生成される `vscode` カテゴリはデフォルトで `ignore`（Git 追跡外）です。dotfiles-bridge で管理する場合は、`sync.toml` の `ignore` から `vscode` を外し、`auto` に追加してください。
 
 ```toml
 auto = ["ai-agent", "shell", "vscode"]
@@ -61,27 +61,23 @@ ignore = []
 
 ```toml
 [darwin]
-"settings.json" = ["~/Library/Application Support/Code/User/settings.json"]
-"keybindings.json" = ["~/Library/Application Support/Code/User/keybindings.json"]
+"settings.json" = [
+    "~/Library/Application Support/Code/User/settings.json",
+    "~/Library/Application Support/Cursor/User/settings.json",
+]
+"keybindings.json" = [
+    "~/Library/Application Support/Code/User/keybindings.json",
+    "~/Library/Application Support/Cursor/User/keybindings.json",
+]
 
-[linux]
-"settings.json" = ["~/.config/Code/User/settings.json"]
-"keybindings.json" = ["~/.config/Code/User/keybindings.json"]
-
-[win32]
-"settings.json" = ["~/AppData/Roaming/Code/User/settings.json"]
-"keybindings.json" = ["~/AppData/Roaming/Code/User/keybindings.json"]
-```
-
-### 他の VS Code 系エディタへの同時配置
-
-VS Code と同じ設定形式を使うエディタ（Cursor, Windsurf, VSCodium など）にも、同じ設定ファイルを同時に配置できます。
-
-```toml
 [win32]
 "settings.json" = [
     "~/AppData/Roaming/Code/User/settings.json",
     "~/AppData/Roaming/Cursor/User/settings.json",
+]
+"keybindings.json" = [
+    "~/AppData/Roaming/Code/User/keybindings.json",
+    "~/AppData/Roaming/Cursor/User/keybindings.json",
 ]
 ```
 
