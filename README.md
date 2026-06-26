@@ -239,6 +239,12 @@ Windows で symlink を作成するには、開発者モードの有効化が必
 設計の詳細は [doc/Architecture.md](doc/Architecture.md) にあります。
 プロジェクトの成り立ちと設計判断は [doc/Story.md](doc/Story.md) に記録しています。
 
+## Support
+
+このプロジェクトが役に立ったら、コーヒーを奢ってもらえると励みになります。
+
+<a href="https://www.buymeacoffee.com/kokukaityo" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" height="50"></a>
+
 ## ライセンス
 
 [MIT](LICENSE)
